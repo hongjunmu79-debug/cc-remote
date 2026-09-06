@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+from dataclasses import replace
 from concurrent.futures import ThreadPoolExecutor
 
 from cc_remote.wrapper.history_store import (
@@ -19,6 +20,42 @@ def _page(label: str, *, more: bool = False) -> MaterializedHistoryPage:
         oldest_id=label,
         newest_id=label,
     )
+
+
+def test_wide_windows_file_identity_roundtrip_without_precision_loss(tmp_path):
+    source_path = tmp_path / "wide.jsonl"
+    source_path.write_text("first\n")
+    source = replace(HistorySourceFingerprint.capture(source_path),
+                     device=2**80 + 1, inode=2**120 + 123)
+    store = HistoryIndexStore(tmp_path / "state")
+    assert store.put_page("wide", "claude", source, before=None, limit=4,
+                          page=_page("first"))
+    assert store.get_page("wide", "claude", source, before=None, limit=4) == _page("first")
+    with sqlite3.connect(store.path) as connection:
+        row = connection.execute("SELECT source_device, source_inode FROM history_pages").fetchone()
+    assert row == (f"wide:{source.device:x}", f"wide:{source.inode:x}")
+    # Prefix lookup binds the same IDs, including on the no-match path.
+    assert store.get_append_page("wide", "claude", replace(source, size=source.size + 1),
+                                  before=None, limit=4) is None
+
+
+def test_summary_many_final_messages_stays_within_wire_block_limit():
+    from cc_remote.protocol import ConversationTurn
+    events = [{"type": "user_msg", "msg_id": "turn", "prompt": "test"}]
+    for number in range(82):
+        message_id = f"m-{number}"
+        events.extend([
+            {"type": "assistant_msg_start", "message_id": message_id, "channel": "final"},
+            {"type": "delta", "message_id": message_id, "channel": "final", "text": f"reply-{number}"},
+            {"type": "assistant_msg_end", "message_id": message_id, "channel": "final"},
+        ])
+    events.append({"type": "turn_end", "result": {"subtype": "success", "is_error": False}})
+    turns = materialize_history_turns(events)
+    turn = ConversationTurn.model_validate(turns[0])
+    assert len(turn.blocks) == 32
+    assert turn.blocks[0]["text"] == "reply-0"
+    assert turn.blocks[-1]["text"] == "reply-81"
+    assert turn.detailEventCount > 0
 
 
 def test_history_index_roundtrip_is_bound_to_exact_source_snapshot(tmp_path):
@@ -169,7 +206,8 @@ def test_history_index_is_bounded_and_invalidatable(tmp_path):
     store.invalidate_session("session-2")
     assert store.get_page(
         "session-2", "claude", source, before=None, limit=4) is None
-    assert oct(os.stat(store.path).st_mode & 0o777) == "0o600"
+    if os.name != "nt":  # Windows stat mode does not represent NTFS ACLs.
+        assert oct(os.stat(store.path).st_mode & 0o777) == "0o600"
 
 
 def test_history_index_serializes_concurrent_windows_style_refreshes(tmp_path):
@@ -191,7 +229,7 @@ def test_history_index_serializes_concurrent_windows_style_refreshes(tmp_path):
         assert connection.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
 
 
-def test_v6_migration_invalidates_only_codex_derived_rows(tmp_path):
+def test_v8_migration_invalidates_old_derived_rows_but_preserves_transcript(tmp_path):
     source_path = tmp_path / "transcript.jsonl"
     source_path.write_text("{}\n")
     source = HistorySourceFingerprint.capture(source_path)
@@ -225,7 +263,7 @@ def test_v6_migration_invalidates_only_codex_derived_rows(tmp_path):
 
     migrated = HistoryIndexStore(state_dir)
     with sqlite3.connect(migrated.path) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 7
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 8
         for table in (
             "history_pages",
             "history_turn_details",
@@ -233,21 +271,22 @@ def test_v6_migration_invalidates_only_codex_derived_rows(tmp_path):
         ):
             assert connection.execute(
                 f"SELECT COUNT(*) FROM {table} WHERE engine='claude'"
-            ).fetchone()[0] == 1
+            ).fetchone()[0] == 0
             assert connection.execute(
                 f"SELECT COUNT(*) FROM {table} WHERE engine='codex'"
             ).fetchone()[0] == 0
 
     assert migrated.get_page(
         "claude-session", "claude", source, before=None, limit=4,
-    ) == _page("claude-session")
+    ) is None
     assert migrated.get_turn_detail(
         "claude-session", "claude", source, "claude-session",
-    ) is not None
+    ) is None
     assert migrated.get_image_asset(
         "claude-session", "claude", source, "claude-session",
         "claude-image", "thumbnail",
-    ) == ("image/png", 1, 1, b"claude")
+    ) is None
+    assert source_path.read_text() == "{}\n"
     assert migrated.get_page(
         "codex-session", "codex", source, before=None, limit=4,
     ) is None

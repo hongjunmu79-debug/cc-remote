@@ -1262,7 +1262,14 @@ try {
   assert.deepEqual(rekeyedPlaceholder.sessions.map((session: { session_id: string }) =>
     session.session_id), ["real-created"],
   "rekey must atomically migrate the temporary sidebar row");
-  const authoritativeCreated = reduce(rekeyedPlaceholder, {
+  const racedCatalog = reduce(rekeyedPlaceholder, {
+    type: "event", ownership: ownerB,
+    event: event({type: "session_list", engine: "codex", space: "code", sessions: []}),
+  });
+  assert.equal(racedCatalog.focusedSid, "real-created",
+    "a delayed catalog cannot steal focus from a newly created session");
+  assert.equal(racedCatalog.sessions[0].session_id, "real-created");
+  const authoritativeCreated = reduce(racedCatalog, {
     type: "event", ownership: ownerB,
     event: event({
       type: "session_list", engine: "codex", space: "code", sessions: [{
@@ -1272,6 +1279,13 @@ try {
     }),
   });
   assert.equal(authoritativeCreated.sessions[0].summary, "authoritative title");
+  assert.deepEqual(authoritativeCreated.pendingCatalogSids, []);
+  const removedAfterCatalog = reduce(authoritativeCreated, {
+    type: "event", ownership: ownerB,
+    event: event({type: "session_list", engine: "codex", space: "code", sessions: []}),
+  });
+  assert.equal(removedAfterCatalog.focusedSid, null,
+    "once catalogued, authoritative removal must still work");
 
   const acceptanceSid = "query-acceptance";
   const acceptanceOtherSid = "query-acceptance-other";

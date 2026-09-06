@@ -288,6 +288,7 @@ export interface AppState {
   } | null;
   // sessions + multi-session runtimes
   sessions: SessionInfo[];
+  pendingCatalogSids: string[];
   focusedSid: string | null;
   runtimes: Record<string, SessionRuntime>;
   // /btw ephemeral side-fork: the fork's routing key (its runtime lives in
@@ -389,6 +390,7 @@ export const initialState: AppState = {
   sendMode: "interrupt",
   newChat: null,
   sessions: [],
+  pendingCatalogSids: [],
   focusedSid: null,
   runtimes: {},
   btwSid: null,
@@ -995,7 +997,7 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, btwSid: null, btwEngine: undefined, runtimes };
     }
     case "clear_session_list":
-      return { ...state, sessions: [], focusedSid: null };
+      return { ...state, sessions: [], pendingCatalogSids: [], focusedSid: null };
     case "restore_session_list":
       // Surface switches are view changes. Paint that surface's last accepted
       // list immediately, then let the in-flight authoritative list replace it.
@@ -1159,6 +1161,9 @@ function reduceEvent(
         : state.sessions;
       return {
         ...state, focusedSid: newF, runtimes, sessions,
+        pendingCatalogSids: e.request_id && ownership && !hasSession
+          ? [...state.pendingCatalogSids.filter((sid) => sid !== newF), newF].slice(-64)
+          : state.pendingCatalogSids,
         artifact: state.focusedSid && state.focusedSid !== newF ? null : state.artifact,
         cwdByScope,
       };
@@ -1268,21 +1273,29 @@ function reduceEvent(
       return {
         ...state,
         runtimes, sessions,
+        pendingCatalogSids: state.pendingCatalogSids.map(
+          (sid) => sid === old_key ? session_id : sid),
         focusedSid: wasFocused ? session_id : state.focusedSid,
         cwdByScope,
       };
     }
     case "session_list": {
+      // Native catalog reads may race first-turn transcript creation. An older
+      // list must not erase the row confirmed by session_focus/session_rekey.
+      const listed = new Set(e.sessions.map((session) => session.session_id));
+      const pendingCatalogSids = state.pendingCatalogSids.filter((sid) => !listed.has(sid));
+      const sessions = [...state.sessions.filter((session) =>
+        pendingCatalogSids.includes(session.session_id)), ...e.sessions];
       const focusedMissing = !!state.focusedSid
         && !state.focusedSid.startsWith("tmp-")
-        && !e.sessions.some((session) => session.session_id === state.focusedSid);
+        && !sessions.some((session) => session.session_id === state.focusedSid);
       return {
         ...state,
         // A session list is an authenticated wrapper response. It also covers
         // the cold-client race where the wrapper connected before this browser
         // and therefore no wrapper_reconnected broadcast is observed here.
         wrapperOnline: true,
-        sessions: e.sessions,
+        sessions, pendingCatalogSids,
         focusedSid: focusedMissing ? null : state.focusedSid,
         newChat: focusedMissing
           ? {

@@ -909,6 +909,7 @@ export default function App() {
           if (msg.type === "session_list") {
             const currentSid = stateRef.current.focusedSid;
             if (currentSid && !currentSid.startsWith("tmp-")
+                && !stateRef.current.pendingCatalogSids.includes(currentSid)
                 && !msg.sessions.some((session) => session.session_id === currentSid)) {
               didInitFocusRef.current = false;
               preferredSurfaceFocusRef.current = null;

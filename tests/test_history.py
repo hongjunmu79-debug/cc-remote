@@ -1421,7 +1421,7 @@ def test_unpaired_history_agent_message_is_not_lost_at_snapshot_eof(tmp_path):
                     }]},
     }
     encoded_prefix = "".join(json.dumps(row) + "\n" for row in prefix)
-    source.write_text(encoded_prefix + json.dumps(suffix) + "\n")
+    source.write_text(encoded_prefix + json.dumps(suffix) + "\n", newline="")
 
     events, _ = codex_translate_history(
         str(source), tool_result_max=4096,

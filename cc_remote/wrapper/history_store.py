@@ -14,6 +14,7 @@ import os
 import sqlite3
 import time
 from dataclasses import dataclass
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -27,8 +28,7 @@ from cc_remote.attachments import (
 )
 
 
-_SCHEMA_VERSION = 7
-_CODEX_ONLY_MIGRATION_VERSION = 6
+_SCHEMA_VERSION = 8
 _FINGERPRINT_SAMPLE_BYTES = 64 * 1024
 _DEFAULT_MAX_ENTRIES = 128
 _DEFAULT_MAX_BYTES = 64 * 1024 * 1024
@@ -40,6 +40,15 @@ _SUMMARY_LIVE_FIELD_MAX_CHARS = 4 * 1024
 _SUMMARY_LIVE_BLOCK_MAX = 24
 _SUMMARY_BLOCK_MAX = 32
 _VOLATILE_EVENT_FIELDS = frozenset({"ts", "seq", "to", "route_id"})
+
+
+def _sqlite_file_id(value: int) -> int | str:
+    """Keep wide Windows file IDs exact without SQLite INTEGER overflow.
+
+    Non-numeric text avoids INTEGER affinity coercing a decimal string to an
+    imprecise REAL. Existing signed-64-bit IDs retain their storage format.
+    """
+    return value if -(1 << 63) <= value < (1 << 63) else f"wide:{value:x}"
 
 
 @dataclass(frozen=True)
@@ -659,6 +668,12 @@ def materialize_history_turns(
                     "done": done,
                     "channel": "final",
                 })
+        if len(blocks) > _SUMMARY_BLOCK_MAX:
+            # Many final messages can exceed the budget even with no live
+            # blocks. Keep the opening plus latest conclusions; full history
+            # stays available through the existing deferred detail endpoint.
+            blocks = [blocks[0], *blocks[-(_SUMMARY_BLOCK_MAX - 1):]]
+            summary_truncated = True
         turn: dict[str, Any] = {
             "id": turn_id,
             "prompt": prompt,
@@ -709,7 +724,8 @@ class HistoryIndexStore:
         self.max_bytes = max(1024, int(max_bytes))
         self._ensure_schema()
 
-    def _connect(self) -> sqlite3.Connection:
+    @contextmanager
+    def _connect(self):
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         try:
             os.chmod(self.path.parent, 0o700)
@@ -720,9 +736,15 @@ class HistoryIndexStore:
         # prevents a large rollout write from turning a simultaneous refresh
         # into a user-visible warning on Windows.
         connection = sqlite3.connect(self.path, timeout=15)
-        connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA busy_timeout=15000")
-        return connection
+        try:
+            connection.row_factory = sqlite3.Row
+            connection.execute("PRAGMA busy_timeout=15000")
+            with connection:
+                yield connection
+        finally:
+            # sqlite3's transaction context commits/rolls back, but does not
+            # close the handle. Deterministic closure matters on Windows.
+            connection.close()
 
     def _ensure_schema(self) -> None:
         with self._connect() as connection:
@@ -731,9 +753,7 @@ class HistoryIndexStore:
             # source of SQLITE_BUSY under concurrent catalog refreshes.
             connection.execute("PRAGMA journal_mode=WAL")
             current = int(connection.execute("PRAGMA user_version").fetchone()[0])
-            migrate_codex_only = current == _CODEX_ONLY_MIGRATION_VERSION
-            if current not in (
-                    0, _CODEX_ONLY_MIGRATION_VERSION, _SCHEMA_VERSION):
+            if current not in (0, _SCHEMA_VERSION):
                 # This database is derived exclusively from engine transcripts.
                 # Rebuilding is safer than carrying migrations for stale cached
                 # projections across wire-shape changes.
@@ -828,20 +848,7 @@ class HistoryIndexStore:
                 "CREATE INDEX IF NOT EXISTS history_image_assets_lru "
                 "ON history_image_assets(accessed_at)"
             )
-            if migrate_codex_only:
-                # Translator v7 changes Codex turn ownership and assistant
-                # message identities. Claude projections are unaffected and
-                # remain safe to serve, so avoid making every Claude session
-                # pay an unnecessary cold rebuild after this upgrade.
-                for table in (
-                    "history_pages",
-                    "history_turn_details",
-                    "history_image_assets",
-                ):
-                    connection.execute(
-                        f"DELETE FROM {table} WHERE engine='codex'")
-                connection.execute(f"PRAGMA user_version={_SCHEMA_VERSION}")
-            elif current == 0:
+            if current == 0:
                 connection.execute(f"PRAGMA user_version={_SCHEMA_VERSION}")
         try:
             os.chmod(self.path, 0o600)
@@ -918,7 +925,8 @@ class HistoryIndexStore:
                 ORDER BY source_size DESC, created_at DESC
                 LIMIT 1
                 """,
-                (session_id, engine, source.path, source.device, source.inode,
+                (session_id, engine, source.path,
+                 _sqlite_file_id(source.device), _sqlite_file_id(source.inode),
                  source.size, self._cursor(before), int(limit)),
             ).fetchone()
         if row is None:
@@ -1023,7 +1031,7 @@ class HistoryIndexStore:
                     accessed_at=excluded.accessed_at
                 """,
                 (session_id, engine, source.token, source.path,
-                 source.device, source.inode, source.size,
+                 _sqlite_file_id(source.device), _sqlite_file_id(source.inode), source.size,
                  source.head_sha256, source.tail_sha256,
                  self._cursor(before), int(limit), payload, len(payload), now, now),
             )
