@@ -95,7 +95,7 @@ Office 产物预览（DOCX/XLSX/PPTX → PDF）另需在 wrapper 主机安装 **
 压缩包形式），同一局域网内的 **Android 手机**运行原生 pager（`dev.ccremote.lan`）
 或响应式 Web 客户端。不需要公网 VPS、域名或 TLS——流量停留在局域网内。
 
-普通用户只需要在 [GitHub Releases](https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases)
+普通用户只需要在 [GitHub Releases](https://github.com/hongjunmu79-debug/cc-remote/releases)
 下载两个文件：Windows 的 `*-windows-x64-setup.exe` 和 Android 的
 `app-release.apk`。电脑双击安装、手机安装后打开并扫码；不设置密码、不填写 IP，
 也不需要 Python、Node、ADB 或命令行。手工地址与密码只保留为故障恢复入口。
@@ -109,8 +109,8 @@ Android pager / 手机浏览器 ──http://<windows-lan-ip>:8765──▶ Wind
 
 ### 1) 安装 Windows 发行版
 
-> **[GitHub Releases：下载 Windows x64 一键安装包（`*-windows-x64-setup.exe`）](https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases)**
-> · [从同一 Release 下载对应的 `*-windows-x64-setup.exe.sha256`](https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases)
+> **[GitHub Releases：下载 Windows x64 一键安装包（`*-windows-x64-setup.exe`）](https://github.com/hongjunmu79-debug/cc-remote/releases)**
+> · [从同一 Release 下载对应的 `*-windows-x64-setup.exe.sha256`](https://github.com/hongjunmu79-debug/cc-remote/releases)
 
 > **源码与安装包必须匹配：** 本 README 可能先于安装包发布更新。仅使用发布信息
 > 明确包含（或构建自）你准备部署的源码 SHA 的 Release；不能根据当前 README
@@ -173,7 +173,7 @@ curl http://<windows-lan-ip>:8765/healthz
 单机、已装 Python + Node 的情况下：
 
 ```bash
-git clone https://github.com/hongjunmu79-debug/cc-remote-native-pager.git
+git clone https://github.com/hongjunmu79-debug/cc-remote.git
 cd cc-remote-native-pager
 
 python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
@@ -232,7 +232,7 @@ python -m cc_remote.wrapper        # 驱动本地 claude / codex CLI
 `SHA256SUMS`：
 
 ```bash
-release=https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases/download/v3.0.0-pager.17
+release=https://github.com/hongjunmu79-debug/cc-remote/releases/download/v3.0.0-pager.18
 curl -fLO "$release/install.sh"
 curl -fLO "$release/SHA256SUMS"
 

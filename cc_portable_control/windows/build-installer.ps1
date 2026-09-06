@@ -54,6 +54,7 @@ param(
     [string]$OutputDir,
     [string]$IsccPath,
     [switch]$NoServices,
+    [switch]$IsolatedSmokeTest,
     [string]$OutputName
 )
 
@@ -116,6 +117,10 @@ $defines = @(
     "/DOutputName=$outputName"
 )
 $defines += "/DSetupArgs=$setupArgs"
+if ($IsolatedSmokeTest) {
+    if (-not $NoServices) { throw 'IsolatedSmokeTest requires NoServices' }
+    $defines += '/DIsolatedSmokeTest=1'
+}
 
 Write-Step "Compiling installer with ISCC: $iscc"
 & $iscc $defines $iss

@@ -17,7 +17,7 @@ Everything that varies per release lives in one file:
 | `product_version` | `3.0.0` | Base cc-remote backend/web codebase version. |
 | `distribution_version` | `3.0.0-pager.8` | Android-pager release line; what release tags and installers target. |
 | `protocol` | `19` | Wire protocol. Unchanged by the pager distribution. |
-| `repository.owner/name` | `hongjunmu79-debug/cc-remote-native-pager` | Public repository identity used by URLs and install scripts. |
+| `repository.owner/name` | `hongjunmu79-debug/cc-remote` | Public repository identity used by URLs and install scripts. |
 | `android.application_id` | `dev.ccremote.lan` | Android package id; do not change (signing identity). |
 | `android.version_name` | `3.0.0-pager.8` | Mirrors the distribution version. |
 | `android.version_code` | `30017` | Android version code; must strictly increase for every APK. |

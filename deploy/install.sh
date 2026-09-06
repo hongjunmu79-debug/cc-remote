@@ -3,7 +3,7 @@
 set -euo pipefail
 
 VERSION="${CC_REMOTE_VERSION:-3.0.0-pager.18}"
-REPOSITORY="${CC_REMOTE_GITHUB_REPOSITORY:-hongjunmu79-debug/cc-remote-native-pager}"
+REPOSITORY="${CC_REMOTE_GITHUB_REPOSITORY:-hongjunmu79-debug/cc-remote}"
 BASE_URL="${CC_REMOTE_RELEASE_BASE_URL:-https://github.com/$REPOSITORY/releases/download/v$VERSION}"
 
 die() {

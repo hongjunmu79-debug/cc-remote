@@ -30,13 +30,13 @@ METADATA_PATH = ROOT / "deploy" / "release-metadata.json"
 def test_canonical_metadata_values_match_the_pager_distribution():
     metadata = load_release_metadata(METADATA_PATH)
     assert metadata.product_version == "3.0.0"
-    assert metadata.distribution_version == "3.0.0-pager.17"
+    assert metadata.distribution_version == "3.0.0-pager.18"
     assert metadata.protocol == 19
-    assert metadata.repository.slug == "hongjunmu79-debug/cc-remote-native-pager"
+    assert metadata.repository.slug == "hongjunmu79-debug/cc-remote"
     assert metadata.android.application_id == "dev.ccremote.lan"
-    assert metadata.android.version_name == "3.0.0-pager.17"
-    assert metadata.android.version_code == 30026
-    assert metadata.release_tag == "v3.0.0-pager.17"
+    assert metadata.android.version_name == "3.0.0-pager.18"
+    assert metadata.android.version_code == 30027
+    assert metadata.release_tag == "v3.0.0-pager.18"
 
 
 @pytest.mark.parametrize(
@@ -96,7 +96,7 @@ def test_validate_release_metadata_fails_on_drifted_install_sh(tmp_path):
     fake_install = fake / "deploy" / "install.sh"
     fake_install.write_text(
         fake_install.read_text(encoding="utf-8").replace(
-            'VERSION="${CC_REMOTE_VERSION:-3.0.0-pager.17}"',
+            'VERSION="${CC_REMOTE_VERSION:-3.0.0-pager.18}"',
             'VERSION="${CC_REMOTE_VERSION:-1.2.3}"',
         ),
         encoding="utf-8",
@@ -147,5 +147,5 @@ def test_validate_release_metadata_cli_prints_canonical_summary():
         text=True,
     )
     assert result.returncode == 0, result.stderr
-    assert "3.0.0-pager.17" in result.stdout
-    assert "hongjunmu79-debug/cc-remote-native-pager" in result.stdout
+    assert "3.0.0-pager.18" in result.stdout
+    assert "hongjunmu79-debug/cc-remote" in result.stdout

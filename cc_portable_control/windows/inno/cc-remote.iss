@@ -37,7 +37,12 @@
 #endif
 
 [Setup]
+#ifdef IsolatedSmokeTest
+AppId=CC-Remote-Isolated-Lifecycle-Smoke
+UsePreviousAppDir=no
+#else
 AppId={{8F6D9A7E-CCR0-4E21-9B5E-CCREMOTE2026}}
+#endif
 AppName=CC Remote
 AppVersion={#DistVersion}
 AppVerName=CC Remote {#DistVersion}
@@ -75,9 +80,11 @@ Source: "{#StageDir}\payload\*"; DestDir: "{app}\release\payload"; Flags: ignore
 Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; Description: "Open cc-remote console"; Flags: postinstall nowait skipifsilent
 
 [Icons]
+#ifndef IsolatedSmokeTest
 Name: "{group}\CC Remote 控制台"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"
 Name: "{autodesktop}\CC Remote 控制台"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"
 Name: "{group}\卸载 CC Remote"; Filename: "{uninstallexe}"
+#endif
 
 [Code]
 var

@@ -5,7 +5,7 @@
   "protocol": 19,
   "repository": {
     "owner": "hongjunmu79-debug",
-    "name": "cc-remote-native-pager"
+    "name": "cc-remote"
   },
   "android": {
     "application_id": "dev.ccremote.lan",

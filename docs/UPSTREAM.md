@@ -1,6 +1,6 @@
 # Upstream provenance
 
-This repository (`hongjunmu79-debug/cc-remote-native-pager`) is a production
+This repository (`hongjunmu79-debug/cc-remote`) is a production
 hardening of the **cc-remote** remote-control plane, adapted for the native
 Android pager distribution.
 

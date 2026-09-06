@@ -73,7 +73,7 @@ runners.
 
 - `deploy/release-metadata.json` (new) — canonical source: product `3.0.0`,
   distribution `3.0.0-pager.5`, protocol `19`, repo
-  `hongjunmu79-debug/cc-remote-native-pager`, Android `dev.ccremote.lan` /
+  `hongjunmu79-debug/cc-remote`, Android `dev.ccremote.lan` /
   `30014`.
 - `deploy/release_metadata.py` (new) — typed loader/validator.
 - `deploy/release_scan.py` (new) — forbidden-literal and high-confidence-secret

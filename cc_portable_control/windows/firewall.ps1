@@ -36,8 +36,18 @@ Set-StrictMode -Version 2.0
 
 if (-not $InstallRoot) { $InstallRoot = Join-Path $env:LOCALAPPDATA "cc-remote" }
 
-if ($Remove -and -not (Get-NetFirewallRule -DisplayName "cc-remote-$Port" -ErrorAction SilentlyContinue)) {
-    exit 0
+if ($Remove) {
+    # Check ownership before asking for elevation. An isolated installation
+    # must not prompt to remove another installation's rule on the same port.
+    $candidateRules = Get-NetFirewallRule -DisplayName "cc-remote-$Port" -ErrorAction SilentlyContinue
+    if (-not $candidateRules) { exit 0 }
+    $ownedPrograms = @(
+        (Join-Path $InstallRoot 'runtime\python\python.exe'),
+        (Join-Path $InstallRoot 'runtime\.venv\Scripts\python.exe')
+    )
+    $ownedRules = $candidateRules | Get-NetFirewallApplicationFilter |
+        Where-Object { $_.Program -in $ownedPrograms }
+    if (-not $ownedRules) { exit 0 }
 }
 
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()

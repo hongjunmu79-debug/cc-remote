@@ -107,7 +107,7 @@ responsive web client. No public VPS, no domain, no TLS needed — traffic stays
 inside your LAN.
 
 For a normal install, download exactly two files from
-[GitHub Releases](https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases):
+[GitHub Releases](https://github.com/hongjunmu79-debug/cc-remote/releases):
 the Windows `*-windows-x64-setup.exe` and Android `app-release.apk`. Double-click
 the Windows installer, open the Android app, and scan. No password, IP address,
 Python, Node, ADB, or command line is required; manual address/password fields
@@ -123,9 +123,9 @@ Android pager / phone browser ──http://<windows-lan-ip>:8765──▶ Window
 ### 1) Install the Windows distribution
 
 > **[GitHub Releases: download the Windows x64 one-click installer
-> (`*-windows-x64-setup.exe`)](https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases)**
+> (`*-windows-x64-setup.exe`)](https://github.com/hongjunmu79-debug/cc-remote/releases)**
 > · [Download its matching `*-windows-x64-setup.exe.sha256` from the same
-> Release](https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases)
+> Release](https://github.com/hongjunmu79-debug/cc-remote/releases)
 
 > **The source and installer must match:** this README may be updated before an
 > installer is published. Use only a Release whose publication identifies the
@@ -191,7 +191,7 @@ the bounded dashboard projection on top.
 For a single machine with Python + Node already installed:
 
 ```bash
-git clone https://github.com/hongjunmu79-debug/cc-remote-native-pager.git
+git clone https://github.com/hongjunmu79-debug/cc-remote.git
 cd cc-remote-native-pager
 
 python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
@@ -250,7 +250,7 @@ Confirm the version and release attestation on GitHub, then download
 `install.sh` and `SHA256SUMS` from the same release:
 
 ```bash
-release=https://github.com/hongjunmu79-debug/cc-remote-native-pager/releases/download/v3.0.0-pager.17
+release=https://github.com/hongjunmu79-debug/cc-remote/releases/download/v3.0.0-pager.18
 curl -fLO "$release/install.sh"
 curl -fLO "$release/SHA256SUMS"
 

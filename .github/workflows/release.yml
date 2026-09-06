@@ -319,6 +319,14 @@ jobs:
         run: |
           & cc_portable_control\windows\smoke-install.ps1 -StageDir (Join-Path $pwd 'dist\stage') -TestDirectory (Join-Path $env:RUNNER_TEMP ('cc-remote-lifecycle-' + [guid]::NewGuid().ToString('N')))
           if ($LASTEXITCODE -ne 0) { throw 'installed lifecycle failed' }
+      - name: Preserve isolated installer failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-installer-diagnostics
+          path: ${{ runner.temp }}/cc-remote-lifecycle-*/**/installer-setup.log
+          if-no-files-found: ignore
+          retention-days: 3
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: windows-dist

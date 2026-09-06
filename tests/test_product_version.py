@@ -45,13 +45,13 @@ def test_v3_product_version_is_consistent_across_runtime_and_web_metadata():
 
 
 def test_canonical_release_metadata_defines_the_pager_distribution():
-    assert METADATA.distribution_version == "3.0.0-pager.17"
+    assert METADATA.distribution_version == "3.0.0-pager.18"
     assert METADATA.protocol == PROTOCOL_VERSION == 19
     assert METADATA.android.application_id == "dev.ccremote.lan"
-    assert METADATA.android.version_code == 30026
+    assert METADATA.android.version_code == 30027
     assert METADATA.android.version_name == METADATA.distribution_version
-    assert METADATA.repository.slug == "hongjunmu79-debug/cc-remote-native-pager"
-    assert METADATA.release_tag == "v3.0.0-pager.17"
+    assert METADATA.repository.slug == "hongjunmu79-debug/cc-remote"
+    assert METADATA.release_tag == "v3.0.0-pager.18"
 
 
 def test_release_docs_distinguish_product_and_wire_protocol_versions():
@@ -59,9 +59,9 @@ def test_release_docs_distinguish_product_and_wire_protocol_versions():
     readme_en = (ROOT / "README_en.md").read_text()
     changelog = (ROOT / "CHANGELOG.md").read_text()
 
-    assert "当前版本：v3.0.0" in readme
+    assert "开发版本：v3.0.0" in readme
     assert "## v3 架构升级" in readme
-    assert "Current release: v3.0.0" in readme_en
+    assert "Development version: v3.0.0" in readme_en
     assert "## What changed in v3" in readme_en
     for document in (readme, readme_en, changelog):
         assert "v3.0.0" in document
