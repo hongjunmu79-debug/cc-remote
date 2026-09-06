@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
+import "./PairingPage.css";
 
 /** Dedicated local pairing entry, also available after a browser has logged in. */
 export function PairingPage() {
@@ -39,14 +40,15 @@ export function PairingPage() {
     return () => window.clearInterval(timer);
   }, []);
   const remaining = Math.max(0, Math.ceil(expires - now));
-  return <main style={{ minHeight: "100dvh", display: "grid", placeItems: "center", background: "#f4f6fa", color: "#172033", padding: 24 }}>
-    <section style={{ maxWidth: 520, width: "100%", textAlign: "center", background: "white", borderRadius: 20, padding: 28 }}>
+  return <main className="pairing-screen">
+    <section className="pairing-card">
+      <p className="pairing-brand">CC Remote · 设备配对</p>
       <h1 style={{ fontSize: 26 }}>用手机扫码连接电脑</h1>
       <p style={{ lineHeight: 1.8 }}>{message}</p>
-      {svg && remaining > 0 && <div role="img" aria-label="CC Remote 配对二维码" dangerouslySetInnerHTML={{ __html: svg }} />}
+      {svg && remaining > 0 && <div className="pairing-qr" role="img" aria-label="CC Remote 配对二维码" dangerouslySetInnerHTML={{ __html: svg }} />}
       {svg && remaining === 0 && <p role="status">二维码已过期，请点下方刷新。</p>}
-      {svg && <p>{remaining > 0 ? `一次有效 · ${remaining} 秒后过期` : "已过期"}<br />{relay}</p>}
-      <button onClick={() => void generate()} disabled={busy} style={{ margin: 12, padding: "12px 24px", background: "#2563eb", color: "white", borderRadius: 8 }}>
+      {svg && <p className="pairing-address">{remaining > 0 ? `一次有效 · ${remaining} 秒后过期` : "已过期"}<br />{relay}</p>}
+      <button className="pairing-refresh" onClick={() => void generate()} disabled={busy}>
         {busy ? "正在生成…" : svg ? "刷新二维码" : "重新生成二维码"}
       </button>
       <p style={{ fontSize: 14, lineHeight: 1.8 }}>手机与电脑连接同一 Wi-Fi。无需输入 IP 或密码。<br />断线、换网或配对过期后，都可以回到这里重新扫码。</p>

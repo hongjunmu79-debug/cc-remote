@@ -38,13 +38,13 @@
 
 [Setup]
 AppId={{8F6D9A7E-CCR0-4E21-9B5E-CCREMOTE2026}}
-AppName=cc-remote
+AppName=CC Remote
 AppVersion={#DistVersion}
-AppVerName=cc-remote {#DistVersion}
-AppPublisher=cc-remote native-pager
+AppVerName=CC Remote {#DistVersion}
+AppPublisher=CC Remote
 AppComments=Self-hosted remote control for Claude Code / Codex
 DefaultDirName={localappdata}\cc-remote
-DefaultGroupName=cc-remote
+DefaultGroupName=CC Remote
 Compression=lzma2
 SolidCompression=yes
 OutputDir={#OutputDir}
@@ -54,7 +54,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 CreateUninstallRegKey=yes
 Uninstallable=yes
-UninstallDisplayName=cc-remote {#DistVersion}
+UninstallDisplayName=CC Remote {#DistVersion}
 DisableWelcomePage=yes
 DisableProgramGroupPage=yes
 DisableReadyPage=yes

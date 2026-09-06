@@ -1,0 +1,45 @@
+.pairing-screen {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 4vw, 32px);
+  background: radial-gradient(ellipse at top, #152a40, #080e1b 65%);
+  color: #e7f3ff;
+}
+.pairing-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 580px;
+  padding: clamp(16px, 4vw, 32px);
+  text-align: center;
+  background: #101b2d;
+  border: 1px solid #36566b;
+  border-radius: 20px;
+  box-shadow: 0 16px 60px #0005;
+}
+.pairing-brand { color: #67e8f9; letter-spacing: .08em; }
+.pairing-qr {
+  display: flex;
+  justify-content: center;
+  width: min(100%, 320px);
+  margin: 24px auto;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pairing-qr svg { display: block; width: 100%; height: auto; flex: 0 1 auto; }
+.pairing-address { overflow-wrap: anywhere; color: #b7c9dc; }
+.pairing-refresh {
+  margin: 12px 0;
+  padding: 14px 24px;
+  border: 1px solid #67e8f9;
+  background: #67e8f9;
+  color: #081522;
+  border-radius: 8px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.pairing-refresh:disabled { opacity: .55; cursor: wait; }
+.pairing-card a { color: #67e8f9; }
+.pairing-card :is(a, button):focus-visible { outline: 3px solid #c4b5fd; outline-offset: 4px; }

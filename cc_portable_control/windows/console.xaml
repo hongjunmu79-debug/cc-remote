@@ -1,11 +1,12 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="CC Remote 控制台" Width="740" Height="650" MinWidth="660" MinHeight="600"
-        WindowStartupLocation="CenterScreen" Background="#F4F6FA" FontFamily="Microsoft YaHei UI" FontSize="14">
+        WindowStartupLocation="CenterScreen" Background="#080E1B" Foreground="#E7F3FF" FontFamily="Microsoft YaHei UI" FontSize="14">
   <Window.Resources>
     <Style TargetType="Button">
       <Setter Property="Padding" Value="18,11"/><Setter Property="Margin" Value="0,0,12,12"/>
-      <Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#D4DBE7"/>
+      <Setter Property="Background" Value="#15263A"/><Setter Property="BorderBrush" Value="#36566B"/>
+      <Setter Property="Foreground" Value="#E7F3FF"/>
       <Setter Property="Cursor" Value="Hand"/>
     </Style>
     <Style TargetType="TextBlock"><Setter Property="TextWrapping" Value="Wrap"/></Style>
@@ -13,20 +14,20 @@
   <Grid Margin="28">
     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
     <StackPanel>
-      <DockPanel><TextBlock Text="CC Remote" FontSize="30" FontWeight="SemiBold"/><TextBlock Name="Version" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#64748B"/></DockPanel>
-      <TextBlock Text="手机连接电脑，从这里开始。" Foreground="#64748B" Margin="0,6,0,20"/>
+      <DockPanel><TextBlock Text="CC Remote" FontSize="30" FontWeight="SemiBold" Foreground="#67E8F9"/><TextBlock Name="Version" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#B7C9DC"/></DockPanel>
+      <TextBlock Text="连接你的电脑 · 掌控你的任务" Foreground="#B7C9DC" Margin="0,6,0,20"/>
     </StackPanel>
-    <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="22" Margin="0,0,0,18">
+    <Border Grid.Row="1" Background="#101B2D" BorderBrush="#36566B" BorderThickness="1" CornerRadius="12" Padding="22" Margin="0,0,0,18">
       <StackPanel>
-        <TextBlock Name="Status" Text="正在检查连接…" FontSize="20" FontWeight="SemiBold" Foreground="#1D4ED8"/>
-        <TextBlock Name="Detail" Text="控制台会自动启动本机服务，请稍候。" Foreground="#64748B" Margin="0,8,0,14"/>
+        <TextBlock Name="Status" Text="正在检查连接…" FontSize="20" FontWeight="SemiBold" Foreground="#67E8F9"/>
+        <TextBlock Name="Detail" Text="控制台会自动启动本机服务，请稍候。" Foreground="#B7C9DC" Margin="0,8,0,14"/>
         <WrapPanel>
-          <Button Name="Pair" Content="显示配对二维码" Background="#2563EB" Foreground="White" BorderThickness="0"/>
+          <Button Name="Pair" Content="显示配对二维码" Background="#67E8F9" Foreground="#081522" BorderThickness="0"/>
           <Button Name="Browser" Content="打开网页版"/>
           <Button Name="Restart" Content="启动 / 修复连接"/>
         </WrapPanel>
-        <TextBlock Text="1. 手机和电脑连接同一 Wi-Fi。&#10;2. 点“显示配对二维码”，再用手机 App 扫码。&#10;3. 断线会自动重试；换网或配对过期，可随时重新扫码。" LineHeight="25" Foreground="#334155"/>
-        <TextBlock Name="Address" Margin="0,12,0,0" Foreground="#64748B"/>
+        <TextBlock Text="1. 手机和电脑连接同一 Wi-Fi。&#10;2. 点“显示配对二维码”，再用手机 App 扫码。&#10;3. 断线会自动重试；换网或配对过期，可随时重新扫码。" LineHeight="25" Foreground="#B7C9DC"/>
+        <TextBlock Name="Address" Margin="0,12,0,0" Foreground="#B7C9DC"/>
       </StackPanel>
     </Border>
     <Grid Grid.Row="2">
@@ -37,8 +38,8 @@
         <Button Name="Logs" Content="查看日志"/>
         <Button Name="Uninstall" Content="卸载程序"/>
       </WrapPanel>
-      <TextBox Grid.Row="1" Name="Report" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Background="White" BorderBrush="#D4DBE7" Padding="12" Text="连接不成功时，点“排查故障”。这里会显示原因和处理方法，无需查看 GitHub。"/>
+      <TextBox Grid.Row="1" Name="Report" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Background="#101B2D" Foreground="#E7F3FF" BorderBrush="#36566B" Padding="12" Text="连接不成功时，点“排查故障”。这里会显示原因和处理方法，无需查看 GitHub。"/>
     </Grid>
-    <TextBlock Grid.Row="3" Text="关闭此窗口后，已启动的连接服务会继续运行。卸载默认保留配对配置和历史记录。" Foreground="#64748B" FontSize="12" Margin="0,16,0,0"/>
+    <TextBlock Grid.Row="3" Text="关闭此窗口后，已启动的连接服务会继续运行。卸载默认保留配对配置和历史记录。" Foreground="#B7C9DC" FontSize="12" Margin="0,16,0,0"/>
   </Grid>
 </Window>

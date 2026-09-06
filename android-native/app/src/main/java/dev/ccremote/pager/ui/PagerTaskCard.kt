@@ -76,9 +76,9 @@ fun PagerTaskCard(
                 PixelCore(
                     lifecycle = task.lifecycle,
                     activity = task.activity,
-                    modifier = Modifier.size(68.dp),
+                    modifier = Modifier.size(40.dp),
                 )
-                Spacer(Modifier.width(14.dp))
+                Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
@@ -92,6 +92,9 @@ fun PagerTaskCard(
                         Spacer(Modifier.width(8.dp))
                         Text(
                             lifecycleLabel(task.lifecycle),
+                            modifier = Modifier.weight(1f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.labelSmall,
                             color = lifecycleColor(task.lifecycle),
                             fontFamily = FontFamily.Monospace,
@@ -123,6 +126,7 @@ fun PagerTaskCard(
                 }
                 Text(
                     if (expanded) "−" else "+",
+                    modifier = Modifier.padding(start = 10.dp),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

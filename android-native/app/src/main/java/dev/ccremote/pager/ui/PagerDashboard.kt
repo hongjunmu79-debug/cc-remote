@@ -95,16 +95,19 @@ fun PagerDashboard(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
+            Column {
             TopAppBar(
                 title = {
                     Column {
                         Text(
-                            "AGENT DECK",
+                            "CC Remote",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            state.machineId.ifBlank { "等待网页端登录" },
+                            state.machineId.ifBlank { "扫码连接电脑" },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -112,13 +115,14 @@ fun PagerDashboard(
                         )
                     }
                 },
-                actions = {
-                    TextButton(onClick = onRefresh) { Text("刷新") }
-                    TextButton(onClick = onScanPairing) { Text("扫码") }
-                    TextButton(onClick = { settingsOpen = true }) { Text("设置") }
-                    TextButton(onClick = onOpenChat) { Text("聊天") }
-                },
             )
+            Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+                TextButton(onClick = onRefresh, modifier = Modifier.weight(1f)) { Text("刷新") }
+                TextButton(onClick = onScanPairing, modifier = Modifier.weight(1f)) { Text("扫码") }
+                TextButton(onClick = { settingsOpen = true }, modifier = Modifier.weight(1f)) { Text("设置") }
+                TextButton(onClick = onOpenChat, modifier = Modifier.weight(1f)) { Text("聊天") }
+            }
+            }
         },
     ) { padding ->
         Column(

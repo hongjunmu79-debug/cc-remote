@@ -90,17 +90,17 @@ $timer.Add_Tick({
                 $script:ready = $health.ok -eq $true -and $health.wrapper_connected -eq $true
                 if ($script:ready) {
                     $controls.Status.Text = if ($health.clients -gt 0) { "已连接 · $($health.clients) 个客户端在线" } else { "已就绪 · 等待手机扫码" }
-                    $controls.Status.Foreground = '#15803D'
+                    $controls.Status.Foreground = '#6EE7B7'
                     $controls.Detail.Text = "电脑连接服务运行正常，可随时显示二维码。"
                     if ($script:pendingBrowser) { Open-ConsolePage $script:pendingBrowser; $script:pendingBrowser = $null }
                 } else {
                     $controls.Status.Text = '正在连接本机服务…'
-                    $controls.Status.Foreground = '#B45309'
+                    $controls.Status.Foreground = '#FCD34D'
                     $controls.Detail.Text = '网页已启动，电脑连接服务尚未就绪。持续等待时，请点「排查故障」。'
                 }
             } catch {
                 $controls.Status.Text = '服务尚未启动'
-                $controls.Status.Foreground = '#B45309'
+                $controls.Status.Foreground = '#FCD34D'
                 $controls.Detail.Text = '正在启动时请稍候；若持续未就绪，点「启动 / 修复连接」或「排查故障」。'
             }
             $script:healthTask = $null
