@@ -103,7 +103,9 @@ class SecureWebViewController(
             if (chatVisible && result != "true") {
                 // The page really was discarded or never completed loading.
                 // This is the bounded recovery fallback, not normal navigation.
-                webView.reload()
+                // Reloading may revive a previous endpoint during a pairing /
+                // reveal race. Recovery always uses the currently trusted URL.
+                endpoint?.let { webView.loadUrl(it.url) }
             }
         }
     }

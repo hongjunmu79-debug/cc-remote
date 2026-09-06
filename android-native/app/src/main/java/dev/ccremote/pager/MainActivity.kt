@@ -134,9 +134,6 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 viewModel.commands.collect(webController::sendCommand)
             }
-            LaunchedEffect(state.endpoint) {
-                webController.reconfigure(state.endpoint)
-            }
             LaunchedEffect(Unit) {
                 viewModel.events.collect { event ->
                     when (event) {
@@ -177,6 +174,15 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // The dashboard ComposeView is GONE in chat mode. Its recomposer
+                // must not own endpoint changes: pairing can hide that view before
+                // preferences deliver the newly redeemed server address.
+                launch {
+                    viewModel.uiState
+                        .map { state -> state.endpoint }
+                        .distinctUntilChanged()
+                        .collect(webController::reconfigure)
+                }
                 viewModel.uiState
                     .map { state: PagerUiState -> state.screen }
                     .distinctUntilChanged()
