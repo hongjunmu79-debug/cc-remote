@@ -174,7 +174,7 @@ curl http://<windows-lan-ip>:8765/healthz
 
 ```bash
 git clone https://github.com/hongjunmu79-debug/cc-remote.git
-cd cc-remote-native-pager
+cd cc-remote
 
 python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install --require-hashes --only-binary=:all: -r requirements.lock

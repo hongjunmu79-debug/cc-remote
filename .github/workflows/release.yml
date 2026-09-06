@@ -503,7 +503,7 @@ jobs:
             gh release create "$RELEASE_TAG" \
               --verify-tag \
               --draft \
-              --title "cc-remote $RELEASE_TAG" \
+              --title "CC Remote $RELEASE_TAG" \
               --generate-notes
           fi
           gh release upload "$RELEASE_TAG" dist/* --clobber
