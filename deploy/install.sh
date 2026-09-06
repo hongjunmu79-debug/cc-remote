@@ -2,7 +2,7 @@
 # Download, verify, and run a role-specific cc-remote release installer.
 set -euo pipefail
 
-VERSION="${CC_REMOTE_VERSION:-3.0.0-pager.17}"
+VERSION="${CC_REMOTE_VERSION:-3.0.0-pager.18}"
 REPOSITORY="${CC_REMOTE_GITHUB_REPOSITORY:-hongjunmu79-debug/cc-remote-native-pager}"
 BASE_URL="${CC_REMOTE_RELEASE_BASE_URL:-https://github.com/$REPOSITORY/releases/download/v$VERSION}"
 

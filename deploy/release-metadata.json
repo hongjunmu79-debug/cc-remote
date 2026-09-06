@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "product_version": "3.0.0",
-  "distribution_version": "3.0.0-pager.17",
+  "distribution_version": "3.0.0-pager.18",
   "protocol": 19,
   "repository": {
     "owner": "hongjunmu79-debug",
@@ -9,8 +9,8 @@
   },
   "android": {
     "application_id": "dev.ccremote.lan",
-    "version_name": "3.0.0-pager.17",
-    "version_code": 30026,
+    "version_name": "3.0.0-pager.18",
+    "version_code": 30027,
     "signer_sha256": "61b478bd872761fdb65425196b6158cb175a3e102f89fa31bbd57d3dc47bafcd"
   }
 }

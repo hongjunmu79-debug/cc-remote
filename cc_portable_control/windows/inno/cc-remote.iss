@@ -75,9 +75,9 @@ Source: "{#StageDir}\payload\*"; DestDir: "{app}\release\payload"; Flags: ignore
 Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; Description: "Open cc-remote console"; Flags: postinstall nowait skipifsilent
 
 [Icons]
-Name: "{group}\cc-remote 控制台"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"
-Name: "{autodesktop}\cc-remote 控制台"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"
-Name: "{group}\卸载 cc-remote"; Filename: "{uninstallexe}"
+Name: "{group}\CC Remote 控制台"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"
+Name: "{autodesktop}\CC Remote 控制台"; Filename: "powershell.exe"; Parameters: "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy Bypass -File ""{app}\release\cc_portable_control\windows\open-console.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"
+Name: "{group}\卸载 CC Remote"; Filename: "{uninstallexe}"
 
 [Code]
 var

@@ -336,7 +336,7 @@ export function SessionsSidebar({ open, space, onSpaceChange, sessions, liveStat
           <div className="s-head">
             <div className="brand" onClick={onClose}>
               <span className="brand-mark"><ClaudeMark size={17} /></span>
-              <span className="name"><b>cc</b><span>·remote</span></span>
+              <span className="name"><b>CC</b><span> Remote</span></span>
             </div>
             <button className="iconbtn" onClick={onClose} aria-label="收起"><Icon name="chevrons-left" /></button>
           </div>

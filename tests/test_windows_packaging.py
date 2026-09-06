@@ -1256,7 +1256,7 @@ def test_inno_installer_is_a_real_installer_and_build_fails_closed():
     assert "setup.ps1" in iss
     assert "-InstallRoot" in iss
     assert "[Icons]" in iss
-    assert "cc-remote 控制台" in iss
+    assert "CC Remote 控制台" in iss
     assert "open-console.ps1" in iss
     assert "postinstall" in iss
     assert "-Unattended -AllowInsecureHttp" in iss
