@@ -4,7 +4,7 @@
 
 Self-hosted · Dual-engine · Multi-session · Live process · Responsive Web
 
-**Development version: v3.0.0** · Pending distribution `v3.0.0-pager.18` · Wire protocol v19
+**Current release: v3.0.0** · Published distribution `v3.0.0-pager.18` · Wire protocol v19
 
 [中文](README.md) ·
 [Journey 1: Windows + Android on a LAN](#journey-1-windows--android-on-a-trusted-lan) ·

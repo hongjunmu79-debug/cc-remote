@@ -4,7 +4,7 @@
 
 自托管 · 双引擎 · 多会话 · 实时进程 · 响应式 Web
 
-**开发版本：v3.0.0** · 待发布 `v3.0.0-pager.18` · Wire protocol v19
+**当前版本：v3.0.0** · 已发布 `v3.0.0-pager.18` · Wire protocol v19
 
 [English](README_en.md) ·
 [旅程一：局域网内 Windows + Android](#旅程一局域网内-windows--android) ·

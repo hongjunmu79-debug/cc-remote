@@ -59,9 +59,9 @@ def test_release_docs_distinguish_product_and_wire_protocol_versions():
     readme_en = (ROOT / "README_en.md").read_text()
     changelog = (ROOT / "CHANGELOG.md").read_text()
 
-    assert "开发版本：v3.0.0" in readme
+    assert "当前版本：v3.0.0" in readme
     assert "## v3 架构升级" in readme
-    assert "Development version: v3.0.0" in readme_en
+    assert "Current release: v3.0.0" in readme_en
     assert "## What changed in v3" in readme_en
     for document in (readme, readme_en, changelog):
         assert "v3.0.0" in document
