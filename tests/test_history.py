@@ -408,6 +408,37 @@ def test_get_history_image_is_revision_bound_lazy_and_cached(
     asyncio.run(go())
 
 
+def test_history_missing_or_stale_cwd_does_not_cache_empty_page(monkeypatch, tmp_path):
+    source = tmp_path / "existing.jsonl"
+    source.write_text('{"type":"user"}\n', encoding="utf-8")
+    monkeypatch.setattr(mm, "transcript_path", lambda sid: str(source))
+    monkeypatch.setattr(mm, "transcript_timestamps", lambda sid: {})
+    monkeypatch.setattr(mm, "transcript_internal_user_events", lambda sid: {})
+    monkeypatch.setattr(mm, "translate_subagent_history", lambda *a: [])
+    calls = []
+    def read(sid, directory=None):
+        calls.append(directory)
+        return [object()] if directory is None else []
+    monkeypatch.setattr(mm, "get_session_messages", read)
+    monkeypatch.setattr(mm, "last_assistant_model", lambda msgs: None)
+    monkeypatch.setattr(mm, "translate_history", lambda msgs, *a, **kw:
+                        [UserMsg(prompt="retained", msg_id="u1")] if msgs else [])
+
+    async def go():
+        for index, hint in enumerate((None, "stale-project")):
+            machine, _ = _mk_machine()
+            machine._history_index = HistoryIndexStore(tmp_path / f"state-{index}")
+            calls.clear()
+            first = await machine._build_history("s1", cwd_hint=hint, limit=4, detail="summary")
+            assert len(first.turns) == 1
+            assert calls == ([None] if hint is None else [hint, None])
+            count = len(calls)
+            cached = await machine._build_history("s1", cwd_hint="correct-project", limit=4, detail="summary")
+            assert len(cached.turns) == 1
+            assert len(calls) == count
+    asyncio.run(go())
+
+
 def test_history_build_materializes_source_bound_shadow_page(
     monkeypatch, tmp_path,
 ):

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+import pytest
 from dataclasses import replace
 from concurrent.futures import ThreadPoolExecutor
 
@@ -229,7 +230,8 @@ def test_history_index_serializes_concurrent_windows_style_refreshes(tmp_path):
         assert connection.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
 
 
-def test_v8_migration_invalidates_old_derived_rows_but_preserves_transcript(tmp_path):
+@pytest.mark.parametrize("old_version", [6, 8])
+def test_v9_migration_invalidates_old_derived_rows_but_preserves_transcript(tmp_path, old_version):
     source_path = tmp_path / "transcript.jsonl"
     source_path.write_text("{}\n")
     source = HistorySourceFingerprint.capture(source_path)
@@ -248,7 +250,7 @@ def test_v8_migration_invalidates_old_derived_rows_but_preserves_transcript(tmp_
         )
 
     with sqlite3.connect(store.path) as connection:
-        connection.execute("PRAGMA user_version=6")
+        connection.execute(f"PRAGMA user_version={old_version}")
         for table in (
             "history_pages",
             "history_turn_details",
@@ -263,7 +265,7 @@ def test_v8_migration_invalidates_old_derived_rows_but_preserves_transcript(tmp_
 
     migrated = HistoryIndexStore(state_dir)
     with sqlite3.connect(migrated.path) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 8
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 9
         for table in (
             "history_pages",
             "history_turn_details",

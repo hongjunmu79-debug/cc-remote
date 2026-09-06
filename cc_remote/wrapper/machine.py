@@ -4288,10 +4288,17 @@ class WrapperMachine:
             # not a read failure banner.
             events = []
         else:
-            directory = (ctx.cwd if ctx else None) or cwd_hint or self.cfg.cc_cwd
+            # The default workspace is not necessarily this historical session's
+            # project. The SDK can resolve a UUID across its project directories.
+            directory = (ctx.cwd if ctx else None) or cwd_hint
             try:
                 def _read():
-                    return (get_session_messages(sid, directory=directory),
+                    messages = get_session_messages(sid, directory=directory)
+                    if not messages and directory and source_path is not None:
+                        # A stale cwd hint must not materialize an empty page
+                        # against a fingerprint of a transcript found elsewhere.
+                        messages = get_session_messages(sid, directory=None)
+                    return (messages,
                             transcript_timestamps(sid),
                             transcript_internal_user_events(sid))
                 msgs, tss, internal_events = await asyncio.to_thread(_read)
