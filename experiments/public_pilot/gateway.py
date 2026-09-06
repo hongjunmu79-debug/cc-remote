@@ -31,6 +31,10 @@ class Pilot:
         self.grants = {}
         self.lock = asyncio.Lock()
         self.stop = asyncio.Event()
+        # Certificate-store initialization is synchronous and can take seconds on
+        # Windows. Do it once, before serving concurrent requests. Keep per-call
+        # clients/cookie jars isolated; sharing a client could leak LAN cookies.
+        self.ssl_context = httpx.create_ssl_context(trust_env=False)
         self.public = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
         self.control = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
         self.public.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])(self.public_http)
@@ -45,12 +49,15 @@ class Pilot:
             headers["X-Forwarded-For"] = "192.0.2.1"
         if cookie:
             headers["Cookie"] = f"{COOKIE}={cookie}"
-        transport = httpx.AsyncHTTPTransport(local_address="127.0.0.1")
+        transport = httpx.AsyncHTTPTransport(verify=self.ssl_context, trust_env=False,
+                                             local_address="127.0.0.1")
         async with httpx.AsyncClient(trust_env=False, timeout=8, transport=transport) as client:
             try:
                 return await client.request(method, self.upstream + path,
                                             headers=headers, content=body)
-            except httpx.HTTPError:
+            except httpx.HTTPError as error:
+                # Error class only: URLs, headers and credentials are not logged.
+                print("PILOT_UPSTREAM_ERROR", type(error).__name__, flush=True)
                 return httpx.Response(503, json={"error": "local_relay_unavailable"})
 
     @staticmethod

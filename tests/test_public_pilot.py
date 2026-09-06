@@ -1,5 +1,6 @@
 import json
 import time
+import ssl
 
 import httpx
 import pytest
@@ -7,6 +8,26 @@ from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
 from experiments.public_pilot.gateway import COOKIE, Pilot
+
+
+@pytest.mark.asyncio
+async def test_upstream_reuses_verified_context_but_not_cookies(pilot, monkeypatch):
+    contexts, cookies = [], []
+    def transport(**kwargs):
+        contexts.append(kwargs["verify"])
+        assert kwargs["trust_env"] is False
+        assert kwargs["local_address"] == "127.0.0.1"
+        def respond(request):
+            cookies.append(request.headers.get("cookie", ""))
+            return httpx.Response(200, headers={"Set-Cookie": f"{COOKIE}=private; Path=/"})
+        return httpx.MockTransport(respond)
+    monkeypatch.setattr(httpx, "AsyncHTTPTransport", transport)
+    await pilot.upstream_request("GET", "/api/session", cookie="explicit")
+    await pilot.upstream_request("GET", "/assets/test.js")
+    assert cookies == [f"{COOKIE}=explicit", ""]
+    assert contexts == [pilot.ssl_context, pilot.ssl_context]
+    assert pilot.ssl_context.verify_mode == ssl.CERT_REQUIRED
+    assert pilot.ssl_context.check_hostname
 
 
 @pytest.fixture
