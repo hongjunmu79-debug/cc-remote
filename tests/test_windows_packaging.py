@@ -27,6 +27,27 @@ METADATA = {
 }
 
 
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="PowerShell wizard regression")
+def test_first_run_wizard_preserves_unicode_paths_with_legacy_python_encoding(tmp_path):
+    install = tmp_path / "Install path 安装"
+    workspace = tmp_path / "项目 workspace"
+    workspace.mkdir()
+    script = Path(__file__).resolve().parents[1] / "cc_portable_control/windows/config-first-run.ps1"
+    environment = dict(os.environ, PYTHONIOENCODING="cp1252", PYTHONUTF8="0")
+    result = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script),
+         "-VenvPython", sys.executable, "-InstallRoot", str(install),
+         "-Workspace", str(workspace), "-MachineName", "unicode-install-test",
+         "-PublicOrigin", "http://127.0.0.1:8765", "-Unattended", "-AllowInsecureHttp"],
+        capture_output=True, encoding="utf-8", errors="replace", env=environment, timeout=90,
+    )
+    # Do not include config-render stdout in assertion messages: it may contain secrets.
+    assert result.returncode == 0, "first-run wizard failed under a legacy output encoding"
+    config = (install / "config/.env").read_text(encoding="utf-8")
+    assert "项目 workspace" in config
+    assert "Install path 安装" in config
+
+
 def make_source_tree(root: Path) -> None:
     """Create a minimal source tree that passes staging + verification.
 
